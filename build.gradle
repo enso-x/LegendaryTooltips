@@ -33,6 +33,7 @@ dependencies {
 	modImplementation files("libs/Iceberg-1.21-fabric-1.1.24.jar")
 	modImplementation files("libs/Prism-1.21-fabric-1.0.7.jar")
 	modImplementation "curse.maven:roughlyenoughitems-310111:4622769"
+	modImplementation "curse.maven:justenoughitems-238222:5440359"
 }
 
 loom {

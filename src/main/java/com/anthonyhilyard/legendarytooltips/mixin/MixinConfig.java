@@ -29,10 +29,16 @@ public class MixinConfig implements IMixinConfigPlugin
 			loadingModList = FabricLoader.getInstance().getAllMods();
 		}
 
-		// Only apply mixins with "roughlyenoughitems" in the name if the mod "roughlyenoughitems" is present.
+		// Only apply mixins with "roughlyenoughitems" in the name if the modid "roughlyenoughitems" is present.
 		if (mixinClassName.toLowerCase().contains("roughlyenoughitems"))
 		{
 			return loadingModList.stream().anyMatch(modContainer -> modContainer.getMetadata().getId().contentEquals("roughlyenoughitems"));
+		}
+
+		// Only apply mixins with "justenoughitems" in the name if the modid "jei" is present.
+		if (mixinClassName.toLowerCase().contains("justenoughitems"))
+		{
+			return loadingModList.stream().anyMatch(modContainer -> modContainer.getMetadata().getId().contentEquals("jei"));
 		}
 		return true;
 	}

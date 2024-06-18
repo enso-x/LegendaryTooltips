@@ -5,7 +5,8 @@
 	"plugin": "com.anthonyhilyard.legendarytooltips.mixin.MixinConfig",
 	"client": [
 		"GuiGraphicsMixin",
-		"RoughlyEnoughItemsScreenOverlayImplFabricMixin"
+		"RoughlyEnoughItemsScreenOverlayImplFabricMixin",
+		"JustEnoughItemsRenderHelperMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
