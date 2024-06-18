@@ -2,11 +2,13 @@ package com.anthonyhilyard.legendarytooltips;
 
 import java.util.List;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.locale.Language;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.InteractionResult;
@@ -27,8 +29,8 @@ import com.mojang.datafixers.util.Either;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
-import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
+import fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeModConfigEvents;
 import net.minecraftforge.fml.config.ModConfig;
 
 import com.anthonyhilyard.iceberg.events.RenderTickEvents;
@@ -73,14 +75,14 @@ public class LegendaryTooltips implements ClientModInitializer
 		RenderTooltipEvents.POSTEXT.register(LegendaryTooltips::onPostTooltipEvent);
 		RenderTickEvents.START.register(LegendaryTooltips::onRenderTick);
 
-		ModConfigEvents.reloading(Loader.MODID).register(LegendaryTooltipsConfig::onReload);
+		ForgeModConfigEvents.reloading(Loader.MODID).register(LegendaryTooltipsConfig::onReload);
 
 		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(FrameResourceParser.INSTANCE);
 	}
 
-	public static FrameDefinition getDefinitionColors(ItemStack item, int defaultStartBorder, int defaultEndBorder, int defaultStartBackground, int defaultEndBackground)
+	public static FrameDefinition getDefinitionColors(ItemStack item, int defaultStartBorder, int defaultEndBorder, int defaultStartBackground, int defaultEndBackground, HolderLookup.Provider provider)
 	{
-		FrameDefinition result = LegendaryTooltipsConfig.INSTANCE.getFrameDefinition(item);
+		FrameDefinition result = LegendaryTooltipsConfig.INSTANCE.getFrameDefinition(item, provider);
 
 		switch (result.index())
 		{
@@ -209,17 +211,17 @@ public class LegendaryTooltips implements ClientModInitializer
 		return new GatherResult(InteractionResult.PASS, maxWidth, tooltipElements);
 	}
 
-	public static void onRenderTick(float partialTick)
+	public static void onRenderTick(DeltaTracker tracker)
 	{
-		Minecraft mc = Minecraft.getInstance();
+		Minecraft minecraft = Minecraft.getInstance();
 
-		float deltaTime = mc.getDeltaFrameTime() / 50.0f;
+		float deltaTime = tracker.getRealtimeDeltaTicks() / 50.0f;
 		TooltipDecor.updateTimer(deltaTime);
 		ItemModelComponent.updateTimer(deltaTime);
 
-		if (mc.screen != null)
+		if (minecraft.screen != null)
 		{
-			if (mc.screen instanceof AbstractContainerScreen<?> containerScreen)
+			if (minecraft.screen instanceof AbstractContainerScreen<?> containerScreen)
 			{
 				if (containerScreen.hoveredSlot != null &&
 					containerScreen.hoveredSlot.hasItem())
@@ -237,8 +239,14 @@ public class LegendaryTooltips implements ClientModInitializer
 
 	public static ColorExtResult onTooltipColorEvent(ItemStack stack, GuiGraphics graphics, int x, int y, Font font, int backgroundStart, int backgroundEnd, int borderStart, int borderEnd, List<ClientTooltipComponent> components, boolean comparison, int index)
 	{
-		ColorExtResult result;
-		FrameDefinition frameDefinition = getDefinitionColors(stack, borderStart, borderEnd, backgroundStart, backgroundEnd);
+		ColorExtResult result = new ColorExtResult(backgroundStart, backgroundEnd, borderStart, borderEnd);
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.level == null || minecraft.level.registryAccess() == null)
+		{
+			return result;
+		}
+
+		FrameDefinition frameDefinition = getDefinitionColors(stack, borderStart, borderEnd, backgroundStart, backgroundEnd, minecraft.level.registryAccess());
 
 		// Every tooltip will send a color event before a posttext event, so we can store the color here.
 		TooltipDecor.setCurrentTooltipBorderStart(frameDefinition.startBorder().get());
@@ -261,7 +269,15 @@ public class LegendaryTooltips implements ClientModInitializer
 
 	public static void onPostTooltipEvent(ItemStack itemStack, GuiGraphics graphics, int x, int y, Font font, int width, int height, List<ClientTooltipComponent> components, boolean comparison, int index)
 	{
-		if (LegendaryTooltipsConfig.INSTANCE.getFrameDefinition(itemStack).index() == NO_BORDER)
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.level == null || minecraft.level.registryAccess() == null)
+		{
+			return;
+		}
+
+		FrameDefinition frameDefinition = LegendaryTooltipsConfig.INSTANCE.getFrameDefinition(itemStack, minecraft.level.registryAccess());
+
+		if (frameDefinition.index() == NO_BORDER)
 		{
 			return;
 		}
@@ -281,15 +297,14 @@ public class LegendaryTooltips implements ClientModInitializer
 			}
 		}
 
-		// If this is a rare item, draw special border.
+		// If this item has a defined border, draw it.
 		if (comparison)
 		{
-			// (PoseStack poseStack, int x, int y, int width, int height, ItemStack item, List<ClientTooltipComponent> components, Font font, FrameDefinition frameDefinition, boolean comparison, int index)
-			TooltipDecor.drawBorder(poseStack, x, y - 11, width, height + 11, itemStack, components, font, LegendaryTooltipsConfig.INSTANCE.getFrameDefinition(itemStack), comparison, index);
+			TooltipDecor.drawBorder(poseStack, x, y - 11, width, height + 11, itemStack, components, font, frameDefinition, comparison, index);
 		}
 		else
 		{
-			TooltipDecor.drawBorder(poseStack, x, y, width, height, itemStack, components, font, LegendaryTooltipsConfig.INSTANCE.getFrameDefinition(itemStack), comparison, index);
+			TooltipDecor.drawBorder(poseStack, x, y, width, height, itemStack, components, font, frameDefinition, comparison, index);
 		}
 	}
 }

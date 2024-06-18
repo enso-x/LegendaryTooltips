@@ -3,6 +3,7 @@ package com.anthonyhilyard.legendarytooltips.tooltip;
 import java.util.List;
 
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 import com.anthonyhilyard.iceberg.renderer.CustomItemRenderer;
 import com.anthonyhilyard.iceberg.util.GuiHelper;
@@ -104,9 +105,9 @@ public class ItemModelComponent implements TooltipComponent, ClientTooltipCompon
 		GuiHelper.drawGradientRect(matrix, z, x + margin, y + margin + 1, x + margin + 1, y + getRenderHeight() - margin - 1, borderStart, borderStart);
 		GuiHelper.drawGradientRect(matrix, z, x + getRenderWidth() - margin - 1, y + margin + 1, x + getRenderWidth() - margin, y + getRenderHeight() - margin - 1, borderStart, borderStart);
 
-		final PoseStack modelViewStack = RenderSystem.getModelViewStack();
-		modelViewStack.pushPose();
-		modelViewStack.mulPoseMatrix(matrix);
+		final Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
+		modelViewStack.pushMatrix();
+		modelViewStack.mul(matrix);
 		modelViewStack.translate(x + margin - 1, y + margin - 1, 0.0f);
 		modelViewStack.scale(1.25f, 1.25f, 1.0f);
 		RenderSystem.applyModelViewMatrix();
@@ -119,7 +120,7 @@ public class ItemModelComponent implements TooltipComponent, ClientTooltipCompon
 
 		customItemRenderer.renderDetailModelIntoGUI(itemStack, 0, 0, Axis.YP.rotationDegrees(rotationAngle), graphics);
 
-		modelViewStack.popPose();
+		modelViewStack.popMatrix();
 		RenderSystem.applyModelViewMatrix();
 	}
 

@@ -36,7 +36,7 @@ public class RoughlyEnoughItemsScreenOverlayImplFabricMixin
 
 		try
 		{
-			Field tooltipStackField = GuiGraphics.class.getDeclaredField("tooltipStack");
+			Field tooltipStackField = GuiGraphics.class.getDeclaredField("icebergTooltipStack");
 			tooltipStackField.setAccessible(true);
 
 			tooltipStackField.set(graphics, itemStack);

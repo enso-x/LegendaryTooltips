@@ -12,6 +12,7 @@ import com.anthonyhilyard.legendarytooltips.config.LegendaryTooltipsConfig.Color
 import com.anthonyhilyard.legendarytooltips.config.LegendaryTooltipsConfig.FrameDefinition;
 import com.anthonyhilyard.legendarytooltips.config.LegendaryTooltipsConfig.FrameSource;
 import com.anthonyhilyard.legendarytooltips.tooltip.TooltipDecor;
+import com.google.common.base.Charsets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -63,11 +64,11 @@ public final class FrameResourceParser implements SimpleSynchronousResourceReloa
 		
 		try
 		{
-			for (Resource resource : resourceManager.getResourceStack(new ResourceLocation(Loader.MODID, "frame_definitions.json")))
+			for (Resource resource : resourceManager.getResourceStack(ResourceLocation.fromNamespaceAndPath(Loader.MODID, "frame_definitions.json")))
 			{
 				try (InputStream inputStream = resource.open())
 				{
-					JsonObject rootObject = GsonHelper.parse(new InputStreamReader(inputStream), true);
+					JsonObject rootObject = GsonHelper.parse(new InputStreamReader(inputStream, Charsets.UTF_8), true);
 
 					// If the definitions key exists, handle it.  It's okay if it's missing.
 					if (rootObject.has("definitions"))
@@ -98,9 +99,10 @@ public final class FrameResourceParser implements SimpleSynchronousResourceReloa
 							if (definitionObject.has("image"))
 							{
 								String parsedImage = GsonHelper.getAsString(definitionObject, "image");
-								if (ResourceLocation.isValidResourceLocation(parsedImage))
+								ResourceLocation imageResourceLocation = ResourceLocation.tryParse(parsedImage);
+								if (imageResourceLocation != null)
 								{
-									image = new ResourceLocation(parsedImage);
+									image = imageResourceLocation;
 								}
 							}
 							if (definitionObject.has("index")) { index = GsonHelper.getAsInt(definitionObject, "index"); }
@@ -166,5 +168,5 @@ public final class FrameResourceParser implements SimpleSynchronousResourceReloa
 	}
 
 	@Override
-	public ResourceLocation getFabricId() { return new ResourceLocation(Loader.MODID, "frame_definitions"); }
+	public ResourceLocation getFabricId() { return ResourceLocation.fromNamespaceAndPath(Loader.MODID, "frame_definitions"); }
 }

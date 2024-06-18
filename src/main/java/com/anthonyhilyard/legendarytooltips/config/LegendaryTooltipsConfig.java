@@ -27,6 +27,7 @@ import com.electronwill.nightconfig.core.Config;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -236,7 +237,7 @@ public class LegendaryTooltipsConfig
 			case ALL:
 				return !itemStack.isEmpty();
 			case EQUIPMENT:
-				return !itemStack.isEmpty() && itemStack.getItem().canBeDepleted();
+				return !itemStack.isEmpty() && itemStack.isDamageableItem();
 		}
 	}
 
@@ -396,7 +397,7 @@ public class LegendaryTooltipsConfig
 		customFrameDefinitions.entrySet().removeIf(entry -> entry.getKey().source == FrameSource.DATA);
 	}
 
-	public FrameDefinition getFrameDefinition(ItemStack item)
+	public FrameDefinition getFrameDefinition(ItemStack item, HolderLookup.Provider provider)
 	{
 		if (frameDefinitionCache.containsKey(item))
 		{
@@ -418,7 +419,7 @@ public class LegendaryTooltipsConfig
 		// First check the blacklist.
 		for (String entry : blacklist.get())
 		{
-			if (Selectors.itemMatches(item, entry))
+			if (Selectors.itemMatches(item, entry, provider))
 			{
 				// Add to cache.
 				frameDefinitionCache.put(item, NO_BORDER);
@@ -447,7 +448,7 @@ public class LegendaryTooltipsConfig
 
 				for (String entry : itemSelectors.get(frameIndex).get())
 				{
-					if (Selectors.itemMatches(item, entry))
+					if (Selectors.itemMatches(item, entry, provider))
 					{
 						// Add to cache.
 						FrameDefinition frameDefinition = new FrameDefinition(TooltipDecor.DEFAULT_BORDERS, frameIndex, () -> startColor.getValue(), () -> endColor.getValue(), () -> startBGColor.getValue(), () -> endBGColor.getValue(), FrameSource.CONFIG, i);
@@ -467,7 +468,7 @@ public class LegendaryTooltipsConfig
 				{
 					for (String entry : customFrameDefinitions.get(frameDefinition))
 					{
-						if (Selectors.itemMatches(item, entry))
+						if (Selectors.itemMatches(item, entry, provider))
 						{
 							// Add to cache.
 							frameDefinitionCache.put(item, frameDefinition);

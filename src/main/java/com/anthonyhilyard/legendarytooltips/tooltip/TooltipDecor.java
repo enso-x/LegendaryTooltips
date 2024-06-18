@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11;
 
 public class TooltipDecor
 {
-	public static final ResourceLocation DEFAULT_BORDERS = new ResourceLocation(Loader.MODID, "textures/gui/tooltip_borders.png");
+	public static final ResourceLocation DEFAULT_BORDERS = ResourceLocation.fromNamespaceAndPath(Loader.MODID, "textures/gui/tooltip_borders.png");
 	
 	static int currentTooltipBorderStart = 0;
 	static int currentTooltipBorderEnd = 0;
