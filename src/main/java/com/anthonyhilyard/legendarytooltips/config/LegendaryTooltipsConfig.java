@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 
 import com.anthonyhilyard.iceberg.util.Selectors;
 import com.anthonyhilyard.iceberg.util.Selectors.SelectorDocumentation;
+import com.anthonyhilyard.iceberg.util.StringRecomposer;
 import com.anthonyhilyard.legendarytooltips.LegendaryTooltips;
 import com.anthonyhilyard.legendarytooltips.Loader;
 import com.anthonyhilyard.legendarytooltips.tooltip.TooltipDecor;
@@ -26,10 +27,17 @@ import com.electronwill.nightconfig.core.Config;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
@@ -99,6 +107,8 @@ public class LegendaryTooltipsConfig
 	private static final Map<FrameDefinition, Set<String>> customFrameDefinitions = new LinkedHashMap<>();
 
 	private static final Map<ItemStack, FrameDefinition> frameDefinitionCache = new HashMap<>();
+
+	private static final Map<FormattedText, FormattedText> formattedTitleCache = new HashMap<>();
 
 	private static final List<Supplier<ConfigValue<?>>> colorSuppliers = new ArrayList<>();
 
@@ -239,6 +249,53 @@ public class LegendaryTooltipsConfig
 			case EQUIPMENT:
 				return !itemStack.isEmpty() && itemStack.isDamageableItem();
 		}
+	}
+
+	private static FormattedCharSequence getTitlePadding(Font font, int maxWidth)
+	{
+		String pad = " ";
+		while (font.width(pad) < maxWidth)
+		{
+			pad += " ";
+		}
+		return FormattedCharSequence.forward(pad, Style.EMPTY);
+	}
+
+	private static Font getFontForTitle(FormattedText title)
+	{
+		Font result = null;
+		Minecraft minecraft = Minecraft.getInstance();
+
+		// TODO: Check if the title itself has a custom font set?
+
+		// Check if the current screen specifies a font.
+		if (minecraft.screen != null && minecraft.screen.font != null && minecraft.screen.font != minecraft.font)
+		{
+			result = minecraft.screen.font;
+		}
+		// Then check if minecraft has a font set.
+		else
+		{
+			result = minecraft.font;
+		}
+
+		return result;
+	}
+
+	public static FormattedText getFormattedTitle(FormattedText title)
+	{
+		if (!formattedTitleCache.containsKey(title))
+		{
+			Font font = getFontForTitle(title);
+			FormattedCharSequence paddedTitle = FormattedCharSequence.fromList(List.of(getTitlePadding(font, 24), Language.getInstance().getVisualOrder(title), getTitlePadding(font, 4)));
+			List<FormattedText> recomposedTitle = StringRecomposer.recompose(List.of(ClientTooltipComponent.create(paddedTitle)));
+			if (!recomposedTitle.isEmpty())
+			{
+				formattedTitleCache.put(title, recomposedTitle.get(0));
+			}
+		}
+
+		return formattedTitleCache.get(title);
 	}
 
 	public static TextColor getColor(Object value)
@@ -488,6 +545,9 @@ public class LegendaryTooltipsConfig
 	{
 		// Clear the frame level cache in case anything has changed.
 		frameDefinitionCache.clear();
+
+		// Clear the formatted title cache as well.
+		formattedTitleCache.clear();
 
 		// Also resolve the colors again.
 		resolveColors();

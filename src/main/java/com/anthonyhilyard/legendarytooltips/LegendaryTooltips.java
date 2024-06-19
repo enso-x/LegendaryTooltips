@@ -9,17 +9,14 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.locale.Language;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.ChatFormatting;
 
@@ -43,7 +40,6 @@ import com.anthonyhilyard.legendarytooltips.config.LegendaryTooltipsConfig;
 import com.anthonyhilyard.legendarytooltips.config.LegendaryTooltipsConfig.FrameDefinition;
 import com.anthonyhilyard.legendarytooltips.config.LegendaryTooltipsConfig.FrameSource;
 import com.anthonyhilyard.legendarytooltips.tooltip.TooltipDecor;
-import com.anthonyhilyard.iceberg.util.StringRecomposer;
 import com.anthonyhilyard.iceberg.util.Tooltips.TitleBreakComponent;
 import com.anthonyhilyard.legendarytooltips.tooltip.ItemModelComponent;
 import com.anthonyhilyard.legendarytooltips.tooltip.PaddingComponent;
@@ -184,12 +180,11 @@ public class LegendaryTooltips implements ClientModInitializer
 			// Alter the title by adding enough space to the beginning to make room for the item model.
 			if (!tooltipElements.isEmpty() && tooltipElements.get(0).left().isPresent())
 			{
-				FormattedText title = tooltipElements.get(0).left().get();
-				FormattedCharSequence paddedTitle = FormattedCharSequence.fromList(List.of(FormattedCharSequence.forward("      ", Style.EMPTY), Language.getInstance().getVisualOrder(title), FormattedCharSequence.forward(" ", Style.EMPTY)));
-				List<FormattedText> recomposedTitle = StringRecomposer.recompose(List.of(ClientTooltipComponent.create(paddedTitle)));
-				if (!recomposedTitle.isEmpty())
+				FormattedText title = LegendaryTooltipsConfig.getFormattedTitle(tooltipElements.get(0).left().get());
+
+				if (title != null)
 				{
-					tooltipElements.set(0, Either.<FormattedText, TooltipComponent>left(recomposedTitle.get(0)));
+					tooltipElements.set(0, Either.<FormattedText, TooltipComponent>left(title));
 
 					// Insert an item model component before the title, and an empty line after it.
 					tooltipElements.add(0, Either.<FormattedText, TooltipComponent>right(new ItemModelComponent(itemStack)));
