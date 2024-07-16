@@ -117,20 +117,17 @@ public class TooltipDecor
 			// If for some reason there is no TitleBreakComponent, we'll default to 1.
 			// If the TitleBreakComponent is the last component, don't draw the separator.
 			int titleLines = Tooltips.calculateTitleLines(components);
+			int numComponents = components.size();
 
-			int numComponents = components.size() - 1;
-			if (LegendaryTooltipsConfig.showModelForItem(item))
+			// Count how many components are not text components, except for (titleLines) count.
+			for (int i = 0; i < components.size(); i++)
 			{
-				// Count how many components are not text components, except for (titleLines) count.
-				for (int i = 0; i < components.size(); i++)
+				if (!(components.get(i) instanceof ClientTextTooltip))
 				{
-					if (!(components.get(i) instanceof ClientTextTooltip))
+					numComponents--;
+					if (numComponents == titleLines)
 					{
-						numComponents--;
-						if (numComponents == titleLines)
-						{
-							break;
-						}
+						break;
 					}
 				}
 			}
