@@ -175,7 +175,7 @@ public class LegendaryTooltips
 					// Otherwise, we'll add a full line.
 					else
 					{
-						tooltipElements.add(2, Either.<FormattedText, TooltipComponent>left(FormattedText.of(" ")));
+						tooltipElements.add(2, Either.<FormattedText, TooltipComponent>right(new PaddingComponent(12)));
 					}
 				}
 			}

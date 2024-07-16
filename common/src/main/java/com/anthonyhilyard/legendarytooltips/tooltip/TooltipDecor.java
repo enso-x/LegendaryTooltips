@@ -121,8 +121,18 @@ public class TooltipDecor
 			int numComponents = components.size() - 1;
 			if (LegendaryTooltipsConfig.showModelForItem(item))
 			{
-				titleLines--;
-				numComponents -= 2;
+				// Count how many components are not text components, except for (titleLines) count.
+				for (int i = 0; i < components.size(); i++)
+				{
+					if (!(components.get(i) instanceof ClientTextTooltip))
+					{
+						numComponents--;
+						if (numComponents == titleLines)
+						{
+							break;
+						}
+					}
+				}
 			}
 
 			if (titleLines < numComponents)
