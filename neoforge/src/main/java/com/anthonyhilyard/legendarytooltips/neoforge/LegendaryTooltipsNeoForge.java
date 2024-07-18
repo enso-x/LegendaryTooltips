@@ -1,6 +1,7 @@
 package com.anthonyhilyard.legendarytooltips.neoforge;
 
 import com.anthonyhilyard.legendarytooltips.LegendaryTooltips;
+import com.anthonyhilyard.legendarytooltips.client.LegendaryTooltipsClient;
 import com.anthonyhilyard.legendarytooltips.neoforge.client.LegendaryTooltipsNeoForgeClient;
 
 import net.neoforged.api.distmarker.Dist;
@@ -19,6 +20,7 @@ public final class LegendaryTooltipsNeoForge
 
 		if (FMLEnvironment.dist == Dist.CLIENT)
 		{
+			LegendaryTooltipsClient.init();
 			modBus.register(LegendaryTooltipsNeoForgeClient.class);
 		}
 	}

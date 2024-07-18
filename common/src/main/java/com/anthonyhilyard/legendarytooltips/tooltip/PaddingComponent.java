@@ -22,7 +22,7 @@ public class PaddingComponent implements TooltipComponent, ClientTooltipComponen
 
 	public static void registerFactory()
 	{
-		RegisterTooltipComponentFactoryEvent.EVENT.register(data -> {
+		RegisterTooltipComponentFactoryEvent.EVENT.register(PaddingComponent.class, data -> {
 			if (data instanceof PaddingComponent paddingComponent)
 			{
 				return paddingComponent;

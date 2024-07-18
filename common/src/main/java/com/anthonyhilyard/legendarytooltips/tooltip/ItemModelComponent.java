@@ -126,7 +126,7 @@ public class ItemModelComponent implements TooltipComponent, ClientTooltipCompon
 
 	public static void registerFactory()
 	{
-		RegisterTooltipComponentFactoryEvent.EVENT.register(data -> {
+		RegisterTooltipComponentFactoryEvent.EVENT.register(ItemModelComponent.class, data -> {
 			if (data instanceof ItemModelComponent itemModelComponent)
 			{
 				return itemModelComponent;
