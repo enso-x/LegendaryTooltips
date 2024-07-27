@@ -1,6 +1,7 @@
 package com.anthonyhilyard.legendarytooltips.forge;
 
 import com.anthonyhilyard.legendarytooltips.LegendaryTooltips;
+import com.anthonyhilyard.legendarytooltips.client.LegendaryTooltipsClient;
 import com.anthonyhilyard.legendarytooltips.forge.client.LegendaryTooltipsForgeClient;
 
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,6 +21,7 @@ public final class LegendaryTooltipsForge
 
 		if (FMLEnvironment.dist == Dist.CLIENT)
 		{
+			LegendaryTooltipsClient.init();
 			MinecraftForge.EVENT_BUS.register(LegendaryTooltipsForgeClient.class);
 		}
 

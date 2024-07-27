@@ -28,7 +28,8 @@
 	
 	"accessWidener": "legendarytooltips.accesswidener",
 	"mixins": [
-		"legendarytooltips.mixins.json"
+		"legendarytooltips.mixins.json",
+		"legendarytooltips.fabric.mixins.json"
 	],
 
 	"depends": {

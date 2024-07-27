@@ -1,12 +1,13 @@
 architectury {
-	common rootProject.enabledPlatforms.split(',')
+	common {
+		clear()
+		add(rootProject.enabledPlatforms.split(','))
+		forgeUsesMojangMappings = true
+	}
 }
 
 loom {
 	accessWidenerPath = file("src/main/resources/legendarytooltips.accesswidener")
-}
-
-repositories {
 }
 
 dependencies {

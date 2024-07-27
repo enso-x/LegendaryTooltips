@@ -1,7 +1,6 @@
 package com.anthonyhilyard.legendarytooltips.forge.client;
 
 import com.anthonyhilyard.legendarytooltips.LegendaryTooltips;
-import com.anthonyhilyard.legendarytooltips.client.LegendaryTooltipsClient;
 
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -15,6 +14,5 @@ public class LegendaryTooltipsForgeClient
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void onClientSetup(FMLClientSetupEvent event)
 	{
-		LegendaryTooltipsClient.init();
 	}
 }
