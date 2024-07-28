@@ -23,13 +23,13 @@ public class MixinConfig implements IMixinConfigPlugin
 		// Only apply mixins with "roughlyenoughitems" in the name if the modid "roughlyenoughitems" is present.
 		if (mixinClassName.toLowerCase().contains("roughlyenoughitems"))
 		{
-			return Services.PLATFORM.isModLoaded("roughlyenoughitems");
+			return Services.getPlatformHelper().isModLoaded("roughlyenoughitems");
 		}
 
 		// Only apply mixins with "justenoughitems" in the name if the modid "jei" is present.
 		if (mixinClassName.toLowerCase().contains("justenoughitems"))
 		{
-			return Services.PLATFORM.isModLoaded("jei");
+			return Services.getPlatformHelper().isModLoaded("jei");
 		}
 		return true;
 	}

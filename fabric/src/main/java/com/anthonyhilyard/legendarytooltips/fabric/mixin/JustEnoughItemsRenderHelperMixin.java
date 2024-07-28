@@ -2,8 +2,10 @@ package com.anthonyhilyard.legendarytooltips.fabric.mixin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import mezz.jei.fabric.platform.RenderHelper;
@@ -92,8 +94,9 @@ public class JustEnoughItemsRenderHelperMixin
 	}
 
 	@Redirect(method = "renderTooltip(Lnet/minecraft/client/gui/GuiGraphics;Ljava/util/List;IILnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;)V",
-			  at = @At(value = "INVOKE", target = "Ljava/util/stream/Stream;toList()Ljava/util/List;", remap = false))
-	private List<ClientTooltipComponent> formatTooltipComponents(Stream<ClientTooltipComponent> stream, GuiGraphics graphics,
+			  at = @At(value = "INVOKE", target = "Ljava/util/stream/Stream;collect(Ljava/util/stream/Collector;)Ljava/lang/Object;", remap = false))
+	private Object formatTooltipComponents(Stream<ClientTooltipComponent> stream, Collector<ClientTooltipComponent, ?, ?> collector,
+		GuiGraphics graphics,
 		List<Either<FormattedText, TooltipComponent>> elements,
 		int x, int y,
 		Font font,
@@ -104,10 +107,10 @@ public class JustEnoughItemsRenderHelperMixin
 
 		if (screen == null)
 		{
-			return stream.toList();
+			return stream.collect(collector);
 		}
 
 		List<? extends FormattedText> textElements = elements.stream().map(e -> e.map(text -> text, component -> null)).filter(e -> e != null).toList();
-		return Tooltips.gatherTooltipComponents(itemStack, textElements, itemStack.getTooltipImage(), x, screen.width, screen.height, null, screen.font, -1);
+		return new ArrayList<>(Tooltips.gatherTooltipComponents(itemStack, textElements, itemStack.getTooltipImage(), x, screen.width, screen.height, null, screen.font, -1));
 	}
 }

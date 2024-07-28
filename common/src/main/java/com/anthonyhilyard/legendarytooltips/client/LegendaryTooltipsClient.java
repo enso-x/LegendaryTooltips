@@ -23,6 +23,6 @@ public class LegendaryTooltipsClient
 		RenderTooltipEvents.POSTEXT.register(LegendaryTooltips::onPostTooltipEvent);
 		RenderTickEvents.START.register(LegendaryTooltips::onRenderTick);
 
-		Services.RELOAD_LISTENER_REGISTRAR.registerListener(FrameResourceParser.INSTANCE, ResourceLocation.fromNamespaceAndPath(LegendaryTooltips.MODID, "frame_definitions"));
+		Services.getReloadListenerRegistrar().registerListener(FrameResourceParser.INSTANCE, ResourceLocation.fromNamespaceAndPath(LegendaryTooltips.MODID, "frame_definitions"));
 	}
 }
