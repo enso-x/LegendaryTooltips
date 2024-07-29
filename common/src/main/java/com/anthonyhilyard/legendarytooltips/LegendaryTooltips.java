@@ -186,6 +186,11 @@ public class LegendaryTooltips
 
 	public static void onRenderTick(DeltaTracker tracker)
 	{
+		if (LegendaryTooltipsConfig.getInstance() == null || !LegendaryTooltipsConfig.getInstance().isLoaded())
+		{
+			return;
+		}
+
 		Minecraft minecraft = Minecraft.getInstance();
 
 		float deltaTime = tracker.getRealtimeDeltaTicks() / 50.0f;
