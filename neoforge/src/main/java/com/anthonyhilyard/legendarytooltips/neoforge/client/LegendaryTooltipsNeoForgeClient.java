@@ -1,13 +1,17 @@
 package com.anthonyhilyard.legendarytooltips.neoforge.client;
 
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import com.anthonyhilyard.legendarytooltips.LegendaryTooltips;
+import com.anthonyhilyard.legendarytooltips.client.LegendaryTooltipsClient;
 
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.common.Mod;
+
+@Mod(value = LegendaryTooltips.MODID, dist = Dist.CLIENT)
 public class LegendaryTooltipsNeoForgeClient
 {
-	@SubscribeEvent(priority = EventPriority.HIGH)
-	public static void onClientSetup(FMLClientSetupEvent event)
+	public LegendaryTooltipsNeoForgeClient()
 	{
+		LegendaryTooltips.init();
+		LegendaryTooltipsClient.init();
 	}
 }
